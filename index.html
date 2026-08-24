@@ -883,6 +883,85 @@ body {
     font-family: 'Caveat', cursive;
     font-size: 18px;
 }
+
+
+/* ТОЛЬКО ДЛЯ ПК - ширина как на смартфоне */
+@media (min-width: 768px) {
+    body {
+        background: #e8e5e0;
+        display: flex;
+        justify-content: center;
+        align-items: flex-start;
+        min-height: 100vh;
+        padding: 20px 0;
+    }
+    
+    .site-wrapper {
+        max-width: 430px !important;
+        width: 100% !important;
+        background: #ffffff !important;
+        box-shadow: 0 0 40px rgba(0, 0, 0, 0.1) !important;
+        margin: 0 !important;
+        border-radius: 0 !important;
+    }
+}
+
+/* УБИРАЕМ СИНЕЕ ВЫДЕЛЕНИЕ ДЛЯ ВСЕХ УСТРОЙСТВ */
+button, 
+.rsvp-submit, 
+.map-btn, 
+.chat-btn, 
+.flower-btn,
+a,
+input,
+textarea,
+select {
+    -webkit-tap-highlight-color: transparent !important;
+    -webkit-touch-callout: none !important;
+}
+
+.rsvp-submit:focus,
+.map-btn:focus,
+.chat-btn:focus,
+.flower-btn:focus,
+button:focus,
+a:focus {
+    outline: none !important;
+    box-shadow: none !important;
+}
+
+.rsvp-submit,
+.map-btn,
+.chat-btn,
+.flower-btn {
+    -webkit-appearance: none !important;
+    appearance: none !important;
+}
+
+
+/* УБИРАЕМ СИНЕЕ ВЫДЕЛЕНИЕ - ЦВЕТА НЕ МЕНЯЕМ */
+* {
+    -webkit-tap-highlight-color: transparent !important;
+}
+
+button,
+.rsvp-submit,
+.map-btn,
+.chat-btn,
+.flower-btn,
+a {
+    -webkit-tap-highlight-color: transparent !important;
+    outline: none !important;
+}
+
+button:focus,
+.rsvp-submit:focus,
+.map-btn:focus,
+.chat-btn:focus,
+.flower-btn:focus,
+a:focus {
+    outline: none !important;
+}
     </style>
 </head>
 <body>
@@ -1150,138 +1229,338 @@ body {
 </section>
 
 
+<!-- Модальные окна -->
+<div id="customModal" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.5); backdrop-filter:blur(4px); z-index:10000; align-items:center; justify-content:center;">
+    <div style="background:#ffffff; border-radius:16px; padding:32px 40px; max-width:380px; width:90%; text-align:center; box-shadow:0 20px 35px rgba(0,0,0,0.15); font-family:-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; border-top:3px solid #2e7d32;">
+        <div style="width:60px; height:60px; border-radius:50%; background:#e8f5e9; display:flex; align-items:center; justify-content:center; margin:0 auto 20px auto;">
+            <div id="modalIcon" style="font-size:32px; font-weight:400; color:#2e7d32; line-height:1;">✓</div>
+        </div>
+        <h3 id="modalTitle" style="font-size:24px; font-weight:500; color:#1a1a1a; margin-bottom:12px; letter-spacing:-0.3px;">Спасибо!</h3>
+        <p id="modalMessage" style="font-size:16px; color:#555555; margin-bottom:28px; line-height:1.5;">Ваш ответ отправлен.</p>
+        <button onclick="closeModal()" style="background:#f5f5f5; color:#333333; border:none; padding:12px 32px; border-radius:40px; font-family:inherit; font-size:15px; font-weight:500; cursor:pointer; transition:all 0.2s ease;">Закрыть</button>
+    </div>
+</div>
+
+<div id="loadingModal" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.5); backdrop-filter:blur(3px); z-index:9999; align-items:center; justify-content:center;">
+    <div style="background:white; border-radius:16px; padding:32px 40px; text-align:center; font-family:-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;">
+        <div style="width:50px; height:50px; border:3px solid #e0e0e0; border-top-color:#5c0623; border-radius:50%; margin:0 auto 20px; animation:spin 1s linear infinite;"></div>
+        <p style="font-size:15px; color:#5c0623; margin:0; font-weight:500;">Отправка ответа...</p>
+    </div>
+</div>
+
+<style>
+    @keyframes spin {
+        to { transform: rotate(360deg); }
+    }
+    #customModal { display: none; }
+    #loadingModal { display: none; }
+</style>
+
 <script>
-// ========== ИСПРАВЛЕННАЯ ВЕРСИЯ - ВОЗВРАЩАЕМ ИСХОДНУЮ ЛОГИКУ ==========
-const flowWrapper = document.getElementById('flow-wrapper');
-const timingSection = document.getElementById('timeline-section');
+// ==============================================
+// СВАДЕБНЫЙ САЙТ - АРТЁМ & ЕКАТЕРИНА
+// Интеграция с Google Sheets
+// ==============================================
 
-if (flowWrapper && timingSection) {
-    // Твои точки пути (как в оригинале)
-    const pathPoints = [
-        { x: -20, y: -80 },
-        { x: -40, y: -70 },
-        { x: -50, y: -60 },
-        { x: -55, y: -50 },
-        { x: -60, y: -40 },
-        { x: -75, y: -30 },
-        { x: -70, y: -20 },
-        { x: -68, y: -10 },
-        { x: -67, y: 0 },
-        { x: -65, y: 10 },
-        { x: -64, y: 20 },
-        { x: -62, y: 30 },
-        { x: -60, y: 40 },
-        { x: -50, y: 60 },
-        { x: -40, y: 70 },
-        { x: -30, y: 80 },
-        { x: -20, y: 90 },
-        { x: -10, y: 100 },
-        { x: 0, y: 110 },
-        { x: 10, y: 120 },
-        { x: 20, y: 130 },
-        { x: 30, y: 140 },
-        { x: 25, y: 150 },
-        { x: 20, y: 160 },
-        { x: 20, y: 170 },
-        { x: 15, y: 180 },
-        { x: 10, y: 190 },
-        { x: 5, y: 200 },
-        { x: 2, y: 210 },
-        { x: 0, y: 220 },
-        { x: -5, y: 230 },
-        { x: -10, y: 240 },
-        { x: -15, y: 250 },
-        { x: -20, y: 260 },
-        { x: -30, y: 270 },
-        { x: -40, y: 280 },
-        { x: -50, y: 290 },
-        { x: -60, y: 300 },
-        { x: -70, y: 310 },
-        { x: -65, y: 320 },
-        { x: -60, y: 340 },
-        { x: -55, y: 350 },
-        { x: -50, y: 360 },
-        { x: -45, y: 370 },
-        { x: -40, y: 380 },
-    ];
-
-    const BASE_WIDTH = 430;
-    const BASE_HEIGHT = 900;
-
-    function getPointOnPath(progress) {
-        let totalLength = 0;
-        const segments = [];
-        
-        for (let i = 1; i < pathPoints.length; i++) {
-            const dx = pathPoints[i].x - pathPoints[i-1].x;
-            const dy = pathPoints[i].y - pathPoints[i-1].y;
-            const length = Math.sqrt(dx*dx + dy*dy);
-            segments.push({ start: pathPoints[i-1], end: pathPoints[i], length });
-            totalLength += length;
-        }
-        
-        let targetDistance = progress * totalLength;
-        let accumulated = 0;
-        
-        for (const seg of segments) {
-            if (accumulated + seg.length >= targetDistance) {
-                const t = (targetDistance - accumulated) / seg.length;
-                return {
-                    x: seg.start.x + (seg.end.x - seg.start.x) * t,
-                    y: seg.start.y + (seg.end.y - seg.start.y) * t
-                };
-            }
-            accumulated += seg.length;
-        }
-        return pathPoints[pathPoints.length - 1];
-    }
-
-    function updateFlowPosition() {
-        const sectionRect = timingSection.getBoundingClientRect();
-        
-        const START_OFFSET = -700;
-        const END_OFFSET = 0;
-        
-        const windowHeight = window.innerHeight;
-        const sectionTop = sectionRect.top + window.scrollY;
-        const sectionBottom = sectionRect.bottom + window.scrollY;
-        
-        const startScroll = sectionTop + START_OFFSET;
-        const endScroll = sectionBottom + END_OFFSET - windowHeight;
-        
-        let progress = (window.scrollY - startScroll) / (endScroll - startScroll);
-        progress = Math.max(0, Math.min(1, progress));
-        
-        const point = getPointOnPath(progress);
-        
-        const scaleX = sectionRect.width / BASE_WIDTH;
-        const scaleY = sectionRect.height / BASE_HEIGHT;
-        
-        const startX = 195 * scaleX;
-        const startY = 100 * scaleY;
-        
-        // ИСПРАВЛЕНИЕ: Просто left и top, как в твоем оригинале
-        flowWrapper.style.left = (startX + point.x * scaleX) + 'px';
-        flowWrapper.style.top = (startY + point.y * scaleY) + 'px';
-    }
-
-    // Обработчик с оберткой requestAnimationFrame для плавности на iOS
-    let rafId = null;
+(function() {
+    // ========== КОНФИГУРАЦИЯ ==========
+    // ⚠️ ЗАМЕНИТЕ ЭТОТ URL НА ВАШ URL ИЗ APPS SCRIPT ⚠️
+    const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwARtwGUvzXbZtGRtX3fZV2Ex3zsQ5Anjb50-vRB7cKe6BjfVNPeqscBNPAyLbZQE8kpA/exec';
     
-    function onScroll() {
-        if (rafId) return;
-        rafId = requestAnimationFrame(() => {
-            updateFlowPosition();
-            rafId = null;
+    let isSubmitting = false;
+    
+    // ========== МОДАЛЬНЫЕ ОКНА ==========
+    function showModal(title, message, isError = false) {
+        const modal = document.getElementById('customModal');
+        const titleEl = document.getElementById('modalTitle');
+        const msgEl = document.getElementById('modalMessage');
+        const iconEl = document.getElementById('modalIcon');
+        const borderEl = modal.querySelector('div:first-child');
+        
+        if (!modal || !titleEl || !msgEl || !iconEl) return;
+        
+        titleEl.textContent = title;
+        msgEl.textContent = message;
+        
+        if (isError) {
+            iconEl.textContent = '✕';
+            iconEl.style.color = '#c62828';
+            iconEl.parentElement.style.background = '#ffebee';
+            borderEl.style.borderTopColor = '#c62828';
+        } else {
+            iconEl.textContent = '✓';
+            iconEl.style.color = '#2e7d32';
+            iconEl.parentElement.style.background = '#e8f5e9';
+            borderEl.style.borderTopColor = '#2e7d32';
+        }
+        
+        modal.style.display = 'flex';
+        
+        if (!isError) {
+            setTimeout(() => {
+                closeModal();
+            }, 4000);
+        }
+    }
+    
+    window.closeModal = function() {
+        const modal = document.getElementById('customModal');
+        if (modal) modal.style.display = 'none';
+    };
+    
+    function showLoading() {
+        const modal = document.getElementById('loadingModal');
+        if (modal) modal.style.display = 'flex';
+    }
+    
+    function hideLoading() {
+        const modal = document.getElementById('loadingModal');
+        if (modal) modal.style.display = 'none';
+    }
+    
+    // ========== ОТПРАВКА В GOOGLE SHEETS ==========
+    async function sendToGoogleSheets(formData) {
+        const formBody = new URLSearchParams();
+        formBody.append('name', formData.name);
+        formBody.append('attendance', formData.attendance);
+        for (const food of formData.food) {
+            formBody.append('food', food);
+        }
+        for (const alcohol of formData.alcohol) {
+            formBody.append('alcohol', alcohol);
+        }
+        
+        const response = await fetch(SCRIPT_URL, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+            body: formBody.toString()
+        });
+        
+        const result = await response.json();
+        return result;
+    }
+    
+    // ========== ИНИЦИАЛИЗАЦИЯ ФОРМЫ ==========
+    function initRSVPForm() {
+        const form = document.getElementById('rsvpForm');
+        if (!form) {
+            console.error('❌ Форма с id="rsvpForm" не найдена!');
+            return;
+        }
+        
+        console.log('✅ Форма найдена, инициализация...');
+        
+        const nameInput = form.querySelector('input[name="name"]');
+        const attendanceRadios = form.querySelectorAll('input[name="attendance"]');
+        const foodCheckboxes = form.querySelectorAll('input[name="food"]');
+        const alcoholCheckboxes = form.querySelectorAll('input[name="alcohol"]');
+        const submitBtn = form.querySelector('.rsvp-submit');
+        
+        // Убираем старый обработчик
+        form.onsubmit = null;
+        
+        form.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            if (isSubmitting) return;
+            
+            const name = nameInput ? nameInput.value.trim() : '';
+            
+            let attendance = null;
+            attendanceRadios.forEach(radio => {
+                if (radio.checked) attendance = radio.value;
+            });
+            
+            // Собираем выбранные предпочтения по еде
+            let foodValues = [];
+            foodCheckboxes.forEach(checkbox => {
+                if (checkbox.checked) {
+                    foodValues.push(checkbox.value);
+                }
+            });
+            
+            // Собираем выбранные предпочтения по алкоголю
+            let alcoholValues = [];
+            alcoholCheckboxes.forEach(checkbox => {
+                if (checkbox.checked) {
+                    alcoholValues.push(checkbox.value);
+                }
+            });
+            
+            // Валидация
+            if (!name) {
+                showModal('Ошибка', 'Пожалуйста, введите ваше имя и фамилию', true);
+                if (nameInput) nameInput.focus();
+                return;
+            }
+            
+            if (!attendance) {
+                showModal('Ошибка', 'Пожалуйста, выберите, планируете ли вы присутствовать', true);
+                return;
+            }
+            
+            // Блокируем кнопку
+            isSubmitting = true;
+            if (submitBtn) {
+                submitBtn.disabled = true;
+                submitBtn.textContent = 'Отправка...';
+            }
+            
+            showLoading();
+            
+            try {
+                const formData = { 
+                    name: name, 
+                    attendance: attendance,
+                    food: foodValues,
+                    alcohol: alcoholValues
+                };
+                
+                const result = await sendToGoogleSheets(formData);
+                
+                hideLoading();
+                
+                if (result.result === 'success') {
+                    let responseMessage = '';
+                    if (attendance === 'Да, с удовольствием!') {
+                        responseMessage = `Спасибо, ${name}! Будем ждать вас на нашей свадьбе 27 июля 2027 года! 🎉`;
+                    } else {
+                        responseMessage = `Спасибо за ответ, ${name}! Очень жаль, что вы не сможете быть с нами.`;
+                    }
+                    
+                    showModal('Ответ отправлен!', responseMessage, false);
+                    
+                    // Очищаем форму
+                    if (nameInput) nameInput.value = '';
+                    attendanceRadios.forEach(radio => radio.checked = false);
+                    foodCheckboxes.forEach(checkbox => checkbox.checked = false);
+                    alcoholCheckboxes.forEach(checkbox => checkbox.checked = false);
+                    
+                    if (navigator.vibrate) navigator.vibrate([50, 30, 50]);
+                } else {
+                    throw new Error(result.message || 'Ошибка отправки');
+                }
+            } catch (error) {
+                hideLoading();
+                showModal('Ошибка', error.message || 'Произошла ошибка при отправке. Пожалуйста, попробуйте ещё раз.', true);
+            } finally {
+                isSubmitting = false;
+                if (submitBtn) {
+                    submitBtn.disabled = false;
+                    submitBtn.textContent = 'Отправить!';
+                }
+            }
         });
     }
-
-    window.addEventListener('scroll', onScroll, { passive: true });
-    window.addEventListener('resize', onScroll, { passive: true });
     
-    // Первый запуск
-    updateFlowPosition();
-}
+    // ========== ЗАПУСК ==========
+    document.addEventListener('DOMContentLoaded', function() {
+        // Форма
+        initRSVPForm();
+        
+        // Сохраняем существующую логику с цветком
+        const flowWrapper = document.getElementById('flow-wrapper');
+        const timingSection = document.getElementById('timeline-section');
+
+        if (flowWrapper && timingSection) {
+            const pathPoints = [
+                { x: -20, y: -80 }, { x: -40, y: -70 }, { x: -50, y: -60 },
+                { x: -55, y: -50 }, { x: -60, y: -40 }, { x: -75, y: -30 },
+                { x: -70, y: -20 }, { x: -68, y: -10 }, { x: -67, y: 0 },
+                { x: -65, y: 10 }, { x: -64, y: 20 }, { x: -62, y: 30 },
+                { x: -60, y: 40 }, { x: -50, y: 60 }, { x: -40, y: 70 },
+                { x: -30, y: 80 }, { x: -20, y: 90 }, { x: -10, y: 100 },
+                { x: 0, y: 110 }, { x: 10, y: 120 }, { x: 20, y: 130 },
+                { x: 30, y: 140 }, { x: 25, y: 150 }, { x: 20, y: 160 },
+                { x: 20, y: 170 }, { x: 15, y: 180 }, { x: 10, y: 190 },
+                { x: 5, y: 200 }, { x: 2, y: 210 }, { x: 0, y: 220 },
+                { x: -5, y: 230 }, { x: -10, y: 240 }, { x: -15, y: 250 },
+                { x: -20, y: 260 }, { x: -30, y: 270 }, { x: -40, y: 280 },
+                { x: -50, y: 290 }, { x: -60, y: 300 }, { x: -70, y: 310 },
+                { x: -65, y: 320 }, { x: -60, y: 340 }, { x: -55, y: 350 },
+                { x: -50, y: 360 }, { x: -45, y: 370 }, { x: -40, y: 380 }
+            ];
+
+            const BASE_WIDTH = 430;
+            const BASE_HEIGHT = 900;
+
+            function getPointOnPath(progress) {
+                let totalLength = 0;
+                const segments = [];
+                
+                for (let i = 1; i < pathPoints.length; i++) {
+                    const dx = pathPoints[i].x - pathPoints[i-1].x;
+                    const dy = pathPoints[i].y - pathPoints[i-1].y;
+                    const length = Math.sqrt(dx*dx + dy*dy);
+                    segments.push({ start: pathPoints[i-1], end: pathPoints[i], length });
+                    totalLength += length;
+                }
+                
+                let targetDistance = progress * totalLength;
+                let accumulated = 0;
+                
+                for (const seg of segments) {
+                    if (accumulated + seg.length >= targetDistance) {
+                        const t = (targetDistance - accumulated) / seg.length;
+                        return {
+                            x: seg.start.x + (seg.end.x - seg.start.x) * t,
+                            y: seg.start.y + (seg.end.y - seg.start.y) * t
+                        };
+                    }
+                    accumulated += seg.length;
+                }
+                return pathPoints[pathPoints.length - 1];
+            }
+
+            function updateFlowPosition() {
+                const sectionRect = timingSection.getBoundingClientRect();
+                
+                const START_OFFSET = -700;
+                const END_OFFSET = 0;
+                
+                const windowHeight = window.innerHeight;
+                const sectionTop = sectionRect.top + window.scrollY;
+                const sectionBottom = sectionRect.bottom + window.scrollY;
+                
+                const startScroll = sectionTop + START_OFFSET;
+                const endScroll = sectionBottom + END_OFFSET - windowHeight;
+                
+                let progress = (window.scrollY - startScroll) / (endScroll - startScroll);
+                progress = Math.max(0, Math.min(1, progress));
+                
+                const point = getPointOnPath(progress);
+                
+                const scaleX = sectionRect.width / BASE_WIDTH;
+                const scaleY = sectionRect.height / BASE_HEIGHT;
+                
+                const startX = 195 * scaleX;
+                const startY = 100 * scaleY;
+                
+                flowWrapper.style.left = (startX + point.x * scaleX) + 'px';
+                flowWrapper.style.top = (startY + point.y * scaleY) + 'px';
+            }
+
+            let rafId = null;
+            
+            function onScroll() {
+                if (rafId) return;
+                rafId = requestAnimationFrame(() => {
+                    updateFlowPosition();
+                    rafId = null;
+                });
+            }
+
+            window.addEventListener('scroll', onScroll, { passive: true });
+            window.addEventListener('resize', onScroll, { passive: true });
+            
+            updateFlowPosition();
+        }
+        
+        console.log('✅ Форма RSVP готова к отправке в Google Sheets');
+        console.log('📊 URL скрипта:', SCRIPT_URL);
+    });
+    
+})();
 </script>
 </body>
 </html>
