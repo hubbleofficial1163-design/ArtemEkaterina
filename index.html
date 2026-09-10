@@ -962,6 +962,63 @@ button:focus,
 a:focus {
     outline: none !important;
 }
+
+
+/* ===== ТАЙМЕР ОБРАТНОГО ОТСЧЁТА ===== */
+.countdown-title {
+    font-family: 'Marck Script', cursive;
+    font-size: 32px;
+    color: #5c0623;
+    text-align: center;
+    margin-bottom: 25px;
+    padding: 0 20px;
+    font-weight: 100;
+}
+
+.countdown {
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 30px;
+    padding: 0 15px;
+    flex-wrap: nowrap;
+}
+
+.countdown-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    min-width: 70px;
+    background: rgba(92, 6, 35, 0.06);
+    border-radius: 12px;
+    padding: 12px 8px;
+}
+
+.countdown-number {
+    font-family: 'Roboto', sans-serif;
+    font-size: 34px;
+    font-weight: 300;
+    color: #5c0623;
+    line-height: 1;
+}
+
+.countdown-label {
+    font-family: 'Caveat', cursive;
+    font-size: 17px;
+    color: #5c0623;
+    margin-top: 6px;
+    opacity: 0.85;
+}
+
+@media (max-width: 400px) {
+    .countdown-title { font-size: 26px; }
+    .countdown { gap: 8px; }
+    .countdown-item { min-width: 60px; padding: 10px 5px; }
+    .countdown-number { font-size: 28px; }
+    .countdown-label { font-size: 15px; }
+}
     </style>
 </head>
 <body>
@@ -1221,9 +1278,28 @@ a:focus {
 
 
 <!-- 8. ФУТЕР -->
+<!-- 8. ФУТЕР -->
 <section class="section-footer">
     <div class="footer-content">
-        <img src="footer.png" alt="Будем рады видеть вас!" class="footer-title">
+        <h2 class="countdown-title">До нашей свадьбы осталось</h2>
+        <div class="countdown" id="countdown">
+            <div class="countdown-item">
+                <span class="countdown-number" id="days">00</span>
+                <span class="countdown-label">дней</span>
+            </div>
+            <div class="countdown-item">
+                <span class="countdown-number" id="hours">00</span>
+                <span class="countdown-label">часов</span>
+            </div>
+            <div class="countdown-item">
+                <span class="countdown-number" id="minutes">00</span>
+                <span class="countdown-label">минут</span>
+            </div>
+            <div class="countdown-item">
+                <span class="countdown-number" id="seconds">00</span>
+                <span class="countdown-label">секунд</span>
+            </div>
+        </div>
         <img src="footer.jpg" alt="Здание" class="footer-image">
     </div>
 </section>
@@ -1560,6 +1636,50 @@ a:focus {
         console.log('📊 URL скрипта:', SCRIPT_URL);
     });
     
+})();
+</script>
+
+
+<script>
+// ===== ТАЙМЕР ОБРАТНОГО ОТСЧЁТА ДО СВАДЬБЫ =====
+(function() {
+    // Дата свадьбы: 27 июля 2027 года
+    const weddingDate = new Date(2027, 6, 27, 0, 0, 0).getTime();
+
+    const daysEl = document.getElementById('days');
+    const hoursEl = document.getElementById('hours');
+    const minutesEl = document.getElementById('minutes');
+    const secondsEl = document.getElementById('seconds');
+
+    function pad(num) {
+        return String(num).padStart(2, '0');
+    }
+
+    function updateCountdown() {
+        const now = Date.now();
+        let diff = weddingDate - now;
+
+        if (diff <= 0) {
+            if (daysEl) daysEl.textContent = '00';
+            if (hoursEl) hoursEl.textContent = '00';
+            if (minutesEl) minutesEl.textContent = '00';
+            if (secondsEl) secondsEl.textContent = '00';
+            return;
+        }
+
+        const days = Math.floor(diff / (1000 * 60 * 60 * 24));
+        const hours = Math.floor((diff / (1000 * 60 * 60)) % 24);
+        const minutes = Math.floor((diff / (1000 * 60)) % 60);
+        const seconds = Math.floor((diff / 1000) % 60);
+
+        if (daysEl) daysEl.textContent = pad(days);
+        if (hoursEl) hoursEl.textContent = pad(hours);
+        if (minutesEl) minutesEl.textContent = pad(minutes);
+        if (secondsEl) secondsEl.textContent = pad(seconds);
+    }
+
+    updateCountdown();
+    setInterval(updateCountdown, 1000);
 })();
 </script>
 </body>
